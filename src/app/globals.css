@@ -1,0 +1,239 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-sans: 'Jost', system-ui, sans-serif;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans;
+    font-feature-settings: 'kern', 'liga';
+  }
+
+  ::selection {
+    background: #e0cda9;
+    color: #1a1714;
+  }
+
+  /* A thin, warm scrollbar so the chrome matches the palette. */
+  ::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f3ead9;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #d6c3a2;
+    border: 3px solid #f3ead9;
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #b08d57;
+  }
+
+  :focus-visible {
+    outline: 2px solid #b08d57;
+    outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+    letter-spacing: -0.015em;
+  }
+}
+
+@layer components {
+  .container-lux {
+    @apply mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-14;
+  }
+
+  /* Small uppercase eyebrow text used above section titles. */
+  .label {
+    @apply font-sans text-[10.5px] font-medium uppercase tracking-label text-gold-deep;
+  }
+
+  .label-muted {
+    @apply font-sans text-[10.5px] font-medium uppercase tracking-label text-ink-3;
+  }
+
+  .display-xl {
+    @apply font-display text-[clamp(2.6rem,6.2vw,5.6rem)] font-light leading-[0.98];
+  }
+
+  .display-lg {
+    @apply font-display text-[clamp(2rem,4.4vw,3.6rem)] font-light leading-[1.04];
+  }
+
+  .display-md {
+    @apply font-display text-[clamp(1.6rem,2.6vw,2.4rem)] font-light leading-[1.12];
+  }
+
+  .rule-gold {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-gold-soft to-transparent;
+  }
+
+  /* Primary action: deep ink with a gold wash on hover. */
+  .btn {
+    @apply relative inline-flex items-center justify-center gap-2 whitespace-nowrap font-sans text-[11px] font-medium uppercase tracking-wider2 transition-all duration-300 disabled:pointer-events-none disabled:opacity-45;
+  }
+
+  .btn-primary {
+    @apply btn bg-ink px-8 py-4 text-canvas hover:bg-gold-deep;
+  }
+
+  .btn-gold {
+    @apply btn bg-gold px-8 py-4 text-white hover:bg-gold-deep;
+  }
+
+  .btn-outline {
+    @apply btn border border-ink/25 bg-transparent px-8 py-4 text-ink hover:border-gold hover:bg-gold hover:text-white;
+  }
+
+  .btn-ghost {
+    @apply btn border border-line bg-white/60 px-6 py-3 text-ink hover:border-gold hover:text-gold-deep;
+  }
+
+  .btn-sm {
+    @apply px-5 py-2.5 text-[10px];
+  }
+
+  .field {
+    @apply w-full border border-line bg-white px-4 py-3.5 font-sans text-sm text-ink placeholder:text-ink-3/70 transition-colors focus:border-gold focus:outline-none focus:ring-0;
+  }
+
+  .field-label {
+    @apply mb-2 block font-sans text-[10.5px] font-medium uppercase tracking-label text-ink-2;
+  }
+
+  .card-surface {
+    @apply border border-line bg-white;
+  }
+
+  /*
+   * Data tables that collapse into labelled cards below the admin breakpoint.
+   * Each <td> carrying a data-label becomes a label/value row; the lead cell
+   * (no data-label) keeps its own layout and heads the card. Cells holding
+   * more than one element need a single wrapper so the flex row stays intact.
+   */
+  .table-stack {
+    @apply w-full text-left;
+  }
+
+  @media (max-width: 1023.98px) {
+    .table-stack,
+    .table-stack tbody,
+    .table-stack tr,
+    .table-stack td {
+      display: block;
+      width: auto;
+    }
+
+    .table-stack thead {
+      display: none;
+    }
+
+    .table-stack tr {
+      @apply border-b border-line px-4 py-3;
+    }
+
+    .table-stack tr:last-child {
+      border-bottom: 0;
+    }
+
+    /* Beats the per-cell px-* utilities; the row supplies the inset instead. */
+    .table-stack td {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .table-stack td[data-label] {
+      @apply flex items-center justify-between gap-4 py-1.5 text-right;
+    }
+
+    .table-stack td[data-label]::before {
+      content: attr(data-label);
+      @apply shrink-0 text-left font-sans text-[10px] font-medium uppercase tracking-label text-ink-3;
+    }
+
+    /* Lead cell: full width, left aligned, with a rule under it. */
+    .table-stack td:not([data-label]):not([colspan]) {
+      @apply mb-2 border-b border-line/70 pb-3 text-left;
+    }
+  }
+
+  /* Underline that grows from the left on hover. */
+  .link-underline {
+    @apply relative inline-block;
+  }
+  .link-underline::after {
+    content: '';
+    @apply absolute -bottom-0.5 left-0 h-px w-0 bg-gold transition-all duration-300;
+  }
+  .link-underline:hover::after {
+    @apply w-full;
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, #efe7d9 0px, #f8f3ea 200px, #efe7d9 400px);
+    background-size: 900px 100%;
+    @apply animate-shimmer;
+  }
+
+  /* Ornamental gold frame used on editorial panels. */
+  .frame-gold {
+    position: relative;
+  }
+  .frame-gold::before {
+    content: '';
+    position: absolute;
+    inset: 14px;
+    border: 1px solid rgba(224, 205, 169, 0.55);
+    pointer-events: none;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Staggered entrance for grids; paired with .animate-rise on children. */
+  .stagger > * {
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
