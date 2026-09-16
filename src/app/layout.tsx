@@ -13,7 +13,7 @@ import { getSession } from '@/lib/auth';
 import { SITE } from '@/lib/site';
 
 const display = Cormorant_Garamond({
-  subsets: ['latin'],
+  subsets: ['devanagari'],
   weight: ['300', '400', '500', '600'],
   variable: '--font-display',
   display: 'swap',
