@@ -218,8 +218,7 @@ export function CartView() {
   const { coupon, apply } = useCoupon(sub);
 
   const discount = coupon?.discount ?? 0;
-  const shipping =
-    coupon?.freeShipping || sub - discount >= SITE.freeShippingAbove || sub === 0 ? 0 : SITE.shippingFlat;
+  const shipping = 0;
 
   if (!mounted) {
     return (

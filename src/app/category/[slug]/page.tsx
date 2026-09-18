@@ -7,6 +7,8 @@ import { ChevronRight } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { ShopResults } from '@/app/shop/page';
 import { GridSkeleton } from '@/components/grid-skeleton';
+import { JsonLd } from '@/components/json-ld';
+import { SITE, absoluteUrl } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,9 +19,27 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const category = await prisma.category.findUnique({ where: { slug } });
   if (!category) return { title: 'Collection not found' };
 
+  const title = `${category.name} Collection — Imitation Jewellery Online`;
+  const description = `${category.description ?? category.tagline ?? ''} Hand-crafted ${category.name.toLowerCase()} in antique gold finish, solid brass base, skin-safe and delivered pan-India with 6-month warranty.`;
+  const image = category.image;
+
   return {
-    title: category.name,
-    description: category.description ?? undefined,
+    title,
+    description,
+    alternates: { canonical: `/category/${category.slug}` },
+    openGraph: {
+      title: `${category.name} Collection | ${SITE.brandName}`,
+      description,
+      url: `/category/${category.slug}`,
+      type: 'website',
+      images: image ? [{ url: image, alt: `${category.name} Collection` }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${category.name} Collection | ${SITE.brandName}`,
+      description,
+      images: image ? [image] : [],
+    },
   };
 }
 
@@ -38,8 +58,35 @@ export default async function CategoryPage({
   });
   if (!category) notFound();
 
+  const categoryUrl = absoluteUrl(`/category/${category.slug}`);
+
   return (
     <>
+      <JsonLd
+        data={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.url },
+              { '@type': 'ListItem', position: 2, name: 'Shop', item: absoluteUrl('/shop') },
+              { '@type': 'ListItem', position: 3, name: category.name, item: categoryUrl },
+            ],
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: `${category.name} Collection`,
+            description: category.description,
+            url: categoryUrl,
+            isPartOf: {
+              '@type': 'WebSite',
+              name: SITE.brandName,
+              url: SITE.url,
+            },
+          },
+        ]}
+      />
       <header className="relative border-b border-line">
         <div className="relative h-[320px] overflow-hidden lg:h-[420px]">
           {category.image ? (

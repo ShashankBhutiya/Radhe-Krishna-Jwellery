@@ -168,7 +168,7 @@ async function main() {
       email: adminEmail,
       passwordHash: await bcrypt.hash(adminPassword, 10),
       role: 'ADMIN',
-      phone: '+91 99935 61194',
+      phone: '+91 99930 07021',
     },
   });
   const customer = await prisma.user.create({

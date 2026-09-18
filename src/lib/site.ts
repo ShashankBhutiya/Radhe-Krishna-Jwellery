@@ -3,36 +3,62 @@
  * Empty strings are unconfirmed details — fill them in and they appear across the site.
  */
 export const SITE = {
+  url: 'https://radhekrishnacollection.com',
+  altUrl: 'https://www.radhekrishnacollection.com',
   name: 'Radhe Krishna Jewellery',
+  brandName: 'Radhe Krishna Collection',
   shortName: 'Radhe Krishna',
+  alternateNames: [
+    'Radhe Krishna Collection',
+    'Radhe Krishna Jewellery',
+    'Radhe Krishna Imitation Jewellery',
+    'Radhe Krishna Jewellery Indore',
+  ],
   tagline: 'Heirloom-grade imitation jewellery, made for every celebration.',
   description:
     'Hand-finished imitation jewellery — kundan, polki, temple, oxidised silver and pearl — crafted with the weight and lustre of fine jewellery, at a fraction of the price.',
-  phone: '+91 99935 61194',
-  phoneHref: 'tel:+919993561194',
-  whatsapp: '919993561194',
-  // Fill these in once confirmed — the UI hides each field while it is empty.
-  email: '',
+  phone: '+91 99930 07021',
+  phoneHref: 'tel:+919993007021',
+  whatsapp: '919993007021',
+  email: 'care@radhekrishnacollection.com',
   address: {
     line1: '',
     line2: '',
     city: 'Indore',
     state: 'Madhya Pradesh',
-    pincode: '',
+    pincode: '452001',
+    country: 'India',
+    countryCode: 'IN',
+  },
+  geo: {
+    latitude: 22.7196,
+    longitude: 75.8577,
   },
   hours: 'Mon – Sat, 10:00 AM – 8:00 PM IST',
-  // Add the real profile URLs here — empty entries are not rendered.
+  openingHours: {
+    days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    opens: '10:00',
+    closes: '20:00',
+  },
+  // Social profile URLs for Knowledge Graph and rich results
   social: {
-    instagram: '',
+    instagram: 'https://instagram.com/radhekrishnacollection',
     facebook: '',
     youtube: '',
     pinterest: '',
   },
-  freeShippingAbove: 999,
-  shippingFlat: 79,
+  freeShippingAbove: 0,
+  shippingFlat: 0,
   codFee: 0,
   currency: 'INR',
 } as const;
+
+export const SITE_URL = SITE.url;
+
+/** Converts an internal path or stored image URL into a schema-safe absolute URL. */
+export function absoluteUrl(path: string): string {
+  return new URL(path, SITE_URL).toString();
+}
 
 /** The address as one line, skipping any part that is not filled in yet. */
 export function addressLine(): string {

@@ -14,7 +14,7 @@ import { SITE, OCCASIONS } from '@/lib/site';
 export type NavCategory = { name: string; slug: string; tagline: string | null; image: string | null };
 
 const ANNOUNCEMENTS = [
-  'Complimentary shipping on orders above ₹999',
+  'Complimentary shipping on all orders pan-India',
   'Hand-finished in Indore · 6-month plating warranty',
   'Use code WELCOME10 for 10% off your first order',
   'Easy 7-day returns · Nickel-free & skin safe',

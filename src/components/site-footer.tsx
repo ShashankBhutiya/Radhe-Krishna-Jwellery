@@ -9,7 +9,7 @@ import type { NavCategory } from '@/components/site-header';
 
 export function TrustBar() {
   const items = [
-    { icon: Truck, title: 'Free shipping over ₹999', copy: 'Dispatched within 24 hours, pan-India' },
+    { icon: Truck, title: 'Free shipping on all orders', copy: 'Dispatched within 24 hours, pan-India' },
     { icon: RotateCcw, title: '7-day easy returns', copy: 'No questions, no restocking fee' },
     { icon: ShieldCheck, title: '6-month plating warranty', copy: 'Against normal wear and tarnish' },
     { icon: Gem, title: 'Nickel & lead free', copy: 'Safe for sensitive skin' },
@@ -145,7 +145,7 @@ export function SiteFooter({ categories }: { categories: NavCategory[] }) {
                 { href: '/contact', label: 'Contact us' },
                 { href: '/faq', label: 'FAQ' },
                 { href: '/policies/shipping', label: 'Shipping' },
-                { href: '/policies/returns', label: 'Returns & exchange' },
+                { href: '/policies/returns', label: 'Cancellation & refunds' },
                 { href: '/policies/privacy', label: 'Privacy policy' },
                 { href: '/policies/terms', label: 'Terms of service' },
                 { href: '/about', label: 'Our story' },

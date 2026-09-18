@@ -186,7 +186,7 @@ export function AddToCartPanel({
 
       <ul className="mt-7 grid gap-3 border-t border-line pt-6 text-[13px] text-ink-2">
         {[
-          { icon: Truck, text: 'Free shipping over ₹999 · dispatched in 24 hours' },
+          { icon: Truck, text: 'Free shipping on all orders · dispatched in 24 hours' },
           { icon: RotateCcw, text: '7-day returns, no restocking fee' },
           { icon: ShieldCheck, text: '6-month plating warranty · nickel-free' },
         ].map((r) => (

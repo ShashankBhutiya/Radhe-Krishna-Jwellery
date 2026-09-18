@@ -3,24 +3,61 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { TrustBar } from '@/components/site-footer';
-import { SITE } from '@/lib/site';
+import { SITE, absoluteUrl } from '@/lib/site';
+import { JsonLd } from '@/components/json-ld';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Our story',
-  description: 'How Radhe Krishna Jewellery makes imitation jewellery that carries the weight of the real thing.',
+  title: `Our Story & Atelier | Handcrafted in Indore | ${SITE.brandName}`,
+  description:
+    'Learn how Radhe Krishna crafts heirloom-grade imitation jewellery on solid cast brass in Indore. Hand-set kundan, triple-dipped micron plating, nickel-free and backed by a 6-month warranty.',
+  alternates: { canonical: '/about' },
+  openGraph: {
+    title: `Our Story & Atelier | ${SITE.brandName}`,
+    description:
+      'Imitation jewellery made with fine jewellery techniques. Solid brass, hand-set stones, and triple-dipped plating from our Indore workshop.',
+    url: '/about',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `Our Story & Atelier | ${SITE.brandName}`,
+    description:
+      'Imitation jewellery made with fine jewellery techniques. Solid brass, hand-set stones, and triple-dipped plating from our Indore workshop.',
+  },
 };
 
 export default async function AboutPage() {
   const categories = await prisma.category.findMany({ orderBy: { sortOrder: 'asc' }, take: 9 });
   const img = (i: number) => categories[i]?.image ?? categories[0]?.image ?? '';
 
+  const aboutSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: `About ${SITE.name}`,
+    url: absoluteUrl('/about'),
+    mainEntity: {
+      '@type': ['JewelryStore', 'Organization'],
+      name: SITE.name,
+      alternateName: Array.from(SITE.alternateNames),
+      url: SITE.url,
+      description: SITE.description,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: SITE.address.city,
+        addressRegion: SITE.address.state,
+        addressCountry: SITE.address.countryCode,
+      },
+    },
+  };
+
   return (
     <>
+      <JsonLd data={aboutSchema} />
       <header className="relative">
         <div className="relative h-[52vh] min-h-[360px] overflow-hidden">
-          {img(6) ? <Image src={img(6)} alt="Inside the workshop" fill priority sizes="100vw" className="object-cover" /> : null}
+          {img(6) ? <Image src={img(6)} alt="Inside the Radhe Krishna Indore workshop" fill priority sizes="100vw" className="object-cover" /> : null}
           <div className="absolute inset-0 bg-ink/58" />
           <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-canvas">
             <span className="label text-gold-soft">Hand-finished in {SITE.address.city}</span>
@@ -61,7 +98,7 @@ export default async function AboutPage() {
           <div className="grid grid-cols-2 gap-4">
             {[1, 3, 5, 8].map((n, i) => (
               <div key={n} className={'relative aspect-[4/5] overflow-hidden bg-canvas-3 ' + (i % 2 ? 'mt-8' : '')}>
-                {img(n) ? <Image src={img(n)} alt="" fill sizes="25vw" className="object-cover" /> : null}
+                {img(n) ? <Image src={img(n)} alt="Artisan jewellery craftsmanship" fill sizes="25vw" className="object-cover" /> : null}
               </div>
             ))}
           </div>

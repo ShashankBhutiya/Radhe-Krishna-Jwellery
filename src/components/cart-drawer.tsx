@@ -15,9 +15,7 @@ export function CartDrawer() {
 
   const total = subtotal();
   const saved = savings();
-  const shipping = total >= SITE.freeShippingAbove || total === 0 ? 0 : SITE.shippingFlat;
-  const toFreeShip = Math.max(0, SITE.freeShippingAbove - total);
-  const progress = Math.min(100, (total / SITE.freeShippingAbove) * 100);
+  const shipping = 0;
 
   useEffect(() => {
     document.body.style.overflow = cartOpen ? 'hidden' : '';
@@ -60,19 +58,10 @@ export function CartDrawer() {
         </header>
 
         {items.length > 0 ? (
-          <div className="border-b border-line bg-canvas-2 px-6 py-3.5">
-            <p className="text-[11.5px] text-ink-2">
-              {toFreeShip > 0 ? (
-                <>
-                  Add <strong className="font-medium text-gold-deep">{inr(toFreeShip)}</strong> more for complimentary shipping
-                </>
-              ) : (
-                <span className="font-medium text-gold-deep">You have unlocked complimentary shipping</span>
-              )}
+          <div className="border-b border-line bg-canvas-2 px-6 py-3">
+            <p className="text-[12px] text-ink-2">
+              <span className="font-medium text-gold-deep">Complimentary express shipping on all orders nationwide</span>
             </p>
-            <div className="mt-2 h-[3px] w-full bg-line">
-              <div className="h-full bg-gold transition-all duration-500" style={{ width: `${progress}%` }} />
-            </div>
           </div>
         ) : null}
 

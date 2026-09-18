@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Create an account',
   description: 'Create an account to track orders and keep your wishlist across devices.',
+  robots: { index: false, follow: false },
 };
 
 export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {

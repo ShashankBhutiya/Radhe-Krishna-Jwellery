@@ -11,6 +11,25 @@ import { Empty, Spinner } from '@/components/ui';
 import { cn, inr } from '@/lib/utils';
 import { SITE } from '@/lib/site';
 
+declare global {
+  interface Window {
+    Razorpay?: any;
+  }
+}
+
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') return resolve(false);
+    if (window.Razorpay) return resolve(true);
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
 type SavedAddress = {
   id: string;
   label: string;
@@ -86,8 +105,8 @@ export function CheckoutForm({ user, addresses }: Props) {
   const sub = subtotal();
   const { coupon, apply } = useCoupon(sub);
   const discount = coupon?.discount ?? 0;
-  const shipping = coupon?.freeShipping || sub - discount >= SITE.freeShippingAbove ? 0 : SITE.shippingFlat;
-  const total = sub - discount + shipping;
+  const shipping = 0;
+  const total = sub - discount;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -95,11 +114,94 @@ export function CheckoutForm({ user, addresses }: Props) {
     setError('');
 
     try {
-      // The "online" path is a simulated gateway — no real money moves.
       if (payment === 'ONLINE') {
-        await new Promise((r) => setTimeout(r, 1400));
+        const createRes = await fetch('/api/razorpay/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: items.map((i) => ({ id: i.id, qty: i.qty })),
+            couponCode: coupon?.code ?? '',
+            customerName: form.customerName,
+            email: form.email,
+            phone: form.phone,
+          }),
+        });
+
+        const orderData = await createRes.json();
+        if (!createRes.ok) throw new Error(orderData.error || 'Could not initiate online payment');
+
+        if (orderData.isConfigured && orderData.razorpayOrderId) {
+          const loaded = await loadRazorpayScript();
+          if (!loaded) {
+            throw new Error('Could not open Razorpay checkout window. Please check your internet connection.');
+          }
+
+          const rzp = new window.Razorpay({
+            key: orderData.keyId,
+            amount: orderData.amount,
+            currency: orderData.currency || 'INR',
+            name: SITE.brandName,
+            description: `Order for ${items.length} piece${items.length === 1 ? '' : 's'}`,
+            image: '/apple-icon',
+            order_id: orderData.razorpayOrderId,
+            prefill: {
+              name: form.customerName,
+              email: form.email,
+              contact: form.phone,
+            },
+            theme: { color: '#211a17' },
+            handler: async function (response: {
+              razorpay_order_id: string;
+              razorpay_payment_id: string;
+              razorpay_signature: string;
+            }) {
+              try {
+                const res = await fetch('/api/orders', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    ...form,
+                    paymentMethod: 'ONLINE',
+                    couponCode: coupon?.code ?? '',
+                    items: items.map((i) => ({ id: i.id, qty: i.qty })),
+                    razorpayOrderId: response.razorpay_order_id,
+                    razorpayPaymentId: response.razorpay_payment_id,
+                    razorpaySignature: response.razorpay_signature,
+                  }),
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Payment received but could not record order.');
+
+                clear();
+                apply(null);
+                router.push(`/order/${data.orderNumber}`);
+              } catch (err) {
+                setError(err instanceof Error ? err.message : 'Could not finalize order after payment');
+                setBusy(false);
+              }
+            },
+            modal: {
+              ondismiss: function () {
+                setBusy(false);
+              },
+            },
+          });
+
+          rzp.on('payment.failed', function (resp: { error?: { description?: string } }) {
+            setError(resp.error?.description || 'Payment failed on Razorpay. Please try another card or UPI app.');
+            setBusy(false);
+          });
+
+          rzp.open();
+          return;
+        } else {
+          // Simulation fallback: runs smoothly until Razorpay keys are placed in .env
+          await new Promise((r) => setTimeout(r, 1200));
+        }
       }
 
+      // COD or simulated online fallback
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -352,39 +454,27 @@ export function CheckoutForm({ user, addresses }: Props) {
               <span className="flex-1">
                 <span className="flex items-center gap-2 font-display text-lg">
                   <CreditCard size={16} strokeWidth={1.5} className="text-gold-deep" />
-                  Pay online — UPI, card or netbanking
+                  Pay online — UPI, Cards or NetBanking
                 </span>
                 <span className="mt-1 block text-[13px] text-ink-2">
-                  Demonstration mode: no gateway is connected, so no money moves and no card details are collected.
+                  Pay securely with Razorpay: Google Pay, PhonePe, Paytm, Credit/Debit Cards, or Net Banking.
                 </span>
 
-                {payment === 'ONLINE' ? (
-                  <span className="mt-4 block border-t border-gold/25 pt-4">
-                    <span className="flex gap-2">
-                      {(['UPI', 'CARD'] as const).map((m) => (
-                        <button
-                          key={m}
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setOnlineMode(m);
-                          }}
-                          className={cn(
-                            'flex items-center gap-2 border px-4 py-2 text-[11px] uppercase tracking-label transition-colors',
-                            onlineMode === m ? 'border-gold bg-white text-ink' : 'border-line text-ink-2',
-                          )}
-                        >
-                          {m === 'UPI' ? <Smartphone size={12} strokeWidth={1.7} /> : <CreditCard size={12} strokeWidth={1.7} />}
-                          {m === 'UPI' ? 'UPI' : 'Card'}
-                        </button>
-                      ))}
+                <span className="mt-3 flex flex-wrap items-center gap-1.5">
+                  {['UPI', 'Google Pay', 'PhonePe', 'Paytm', 'Visa', 'Mastercard', 'RuPay', 'NetBanking'].map((badge) => (
+                    <span
+                      key={badge}
+                      className="rounded border border-line bg-canvas-2 px-2 py-0.5 text-[10.5px] font-medium text-ink-2"
+                    >
+                      {badge}
                     </span>
-                    <span className="mt-3 flex items-center gap-2 text-[12px] text-ink-3">
-                      <ShieldCheck size={13} strokeWidth={1.5} className="text-gold" />
-                      Placing the order will simulate a successful {onlineMode === 'UPI' ? 'UPI' : 'card'} payment.
-                    </span>
-                  </span>
-                ) : null}
+                  ))}
+                </span>
+
+                <span className="mt-3 flex items-center gap-2 text-[11.5px] text-ink-3">
+                  <ShieldCheck size={13} strokeWidth={1.5} className="text-gold" />
+                  100% Secure & Encrypted · Powered by Razorpay
+                </span>
               </span>
             </label>
           </div>

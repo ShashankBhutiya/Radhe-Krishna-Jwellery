@@ -3,10 +3,19 @@ import Link from 'next/link';
 import { FaqAccordion } from '@/components/faq-accordion';
 import { SITE } from '@/lib/site';
 import { inr } from '@/lib/utils';
+import { JsonLd } from '@/components/json-ld';
 
 export const metadata: Metadata = {
-  title: 'Frequently asked questions',
-  description: 'Sizing, shipping, returns, care and warranty — answered.',
+  title: `Frequently Asked Questions | Shipping, Returns & Warranty | ${SITE.brandName}`,
+  description:
+    'Answers to common questions regarding our imitation jewellery: sizing, pan-India shipping, 7-day return policy, 6-month plating warranty, and care tips.',
+  alternates: { canonical: '/faq' },
+  openGraph: {
+    title: `FAQ | ${SITE.brandName}`,
+    description: 'Sizing, shipping, returns, care and 6-month warranty answered.',
+    url: '/faq',
+    type: 'website',
+  },
 };
 
 const SECTIONS = [
@@ -14,7 +23,7 @@ const SECTIONS = [
     title: 'Orders & shipping',
     items: [
       ['How long does delivery take?', 'Orders are dispatched from Indore within 24 working hours. Metro cities receive them in 2 to 4 days, the rest of India in 4 to 7 days. You will get a tracking link by email the moment the parcel leaves us.'],
-      ['Do you charge for shipping?', 'Shipping is complimentary on orders above ' + inr(SITE.freeShippingAbove) + '. Below that a flat ' + inr(SITE.shippingFlat) + ' applies. Cash on delivery carries no extra charge anywhere in India.'],
+      ['Do you charge for shipping?', 'No. Shipping is 100% complimentary on every single order across India with no minimum spend required. Cash on delivery also carries no extra charge anywhere in India.'],
       ['Can I change my delivery address after ordering?', 'Yes, as long as the parcel has not shipped. Call us on ' + SITE.phone + ' with your order number and we will update it.'],
       ['Do you ship internationally?', 'Not yet through the website. For international orders, message us on WhatsApp with your city and we will quote a courier rate.'],
     ],
@@ -49,8 +58,21 @@ const SECTIONS = [
 ];
 
 export default function FaqPage() {
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: SECTIONS.flatMap((section) =>
+      section.items.map(([question, answer]) => ({
+        '@type': 'Question',
+        name: question,
+        acceptedAnswer: { '@type': 'Answer', text: answer },
+      })),
+    ),
+  };
+
   return (
     <>
+      <JsonLd data={faqSchema} />
       <header className="border-b border-line bg-canvas-2">
         <div className="container-lux py-14 text-center lg:py-20">
           <span className="label">Good to know</span>

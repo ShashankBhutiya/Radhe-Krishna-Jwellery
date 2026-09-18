@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Sign in',
   description: 'Sign in to track orders, save addresses and keep your wishlist.',
+  robots: { index: false, follow: false },
 };
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; reason?: string }> }) {

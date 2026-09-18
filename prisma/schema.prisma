@@ -143,12 +143,15 @@ model Order {
   shipping      Int      @default(0)
   total         Int
   couponCode    String?
-  paymentMethod String   // COD | ONLINE
-  paymentStatus String   @default("PENDING") // PENDING | PAID | FAILED
-  status        String   @default("PLACED")  // PLACED | CONFIRMED | PACKED | SHIPPED | DELIVERED | CANCELLED
-  notes         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  paymentMethod     String   // COD | ONLINE
+  paymentStatus     String   @default("PENDING") // PENDING | PAID | FAILED
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+  status            String   @default("PLACED")  // PLACED | CONFIRMED | PACKED | SHIPPED | DELIVERED | CANCELLED
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   user  User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   items OrderItem[]

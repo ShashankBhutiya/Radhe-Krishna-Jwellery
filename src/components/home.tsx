@@ -55,7 +55,7 @@ export function Hero({ image, secondary }: { image: string; secondary: string })
           <div className="frame-gold relative aspect-[4/5] overflow-hidden lg:aspect-[5/6]">
             <Image
               src={image}
-              alt="Hand-finished kundan jewellery"
+              alt="Hand-finished kundan and bridal jewellery — Radhe Krishna Collection"
               fill
               priority
               sizes="(max-width:1024px) 100vw, 55vw"
@@ -65,12 +65,12 @@ export function Hero({ image, secondary }: { image: string; secondary: string })
 
           {/* Offset secondary image, desktop only. */}
           <div className="absolute -bottom-8 -left-10 hidden aspect-square w-52 overflow-hidden border-[6px] border-canvas shadow-lift xl:block">
-            <Image src={secondary} alt="" fill sizes="208px" className="object-cover" />
+            <Image src={secondary} alt="Handcrafted Indian imitation jewellery preview" fill sizes="208px" className="object-cover" />
           </div>
 
           <div className="absolute -right-4 top-8 hidden bg-canvas px-5 py-4 shadow-soft xl:block">
             <span className="label block text-gold-deep">Free shipping</span>
-            <span className="mt-1 block font-display text-xl">On orders over ₹999</span>
+            <span className="mt-1 block font-display text-xl">On all orders pan-India</span>
           </div>
         </div>
       </div>
@@ -99,7 +99,7 @@ export function CategoryStrip({ categories }: { categories: Cat[] }) {
               {c.image ? (
                 <Image
                   src={c.image}
-                  alt={c.name}
+                  alt={`${c.name} collection — Handcrafted imitation jewellery`}
                   fill
                   sizes="(max-width:1024px) 50vw, 20vw"
                   className="object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-110"
@@ -125,7 +125,7 @@ export function EditorialSplit({ image }: { image: string }) {
     <section className="border-y border-line bg-canvas-2">
       <div className="container-lux grid items-center gap-12 py-20 lg:grid-cols-2 lg:gap-20 lg:py-28">
         <div className="relative aspect-[4/3] overflow-hidden lg:aspect-[4/5]">
-          <Image src={image} alt="Inside the workshop" fill sizes="(max-width:1024px) 100vw, 50vw" className="object-cover" />
+          <Image src={image} alt="Artisans hand-setting stones on solid brass in our Indore workshop" fill sizes="(max-width:1024px) 100vw, 50vw" className="object-cover" />
         </div>
 
         <div>
@@ -184,7 +184,7 @@ export function OccasionTiles({ images }: { images: string[] }) {
             {images[i] ? (
               <Image
                 src={images[i]}
-                alt={o}
+                alt={`${o} imitation jewellery — Radhe Krishna Collection`}
                 fill
                 sizes="(max-width:1024px) 50vw, 33vw"
                 className="object-cover transition-transform duration-[1100ms] group-hover:scale-110"

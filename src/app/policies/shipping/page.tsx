@@ -3,14 +3,15 @@ import Link from 'next/link';
 import { SITE } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'Shipping policy',
-  description: 'Shipping policy for ' + SITE.name + '.',
+  title: `Shipping & Delivery Policy | ${SITE.brandName}`,
+  description: `Dispatch timelines, shipping rates, pan-India courier delivery, and COD information for ${SITE.name}.`,
+  alternates: { canonical: '/policies/shipping' },
 };
 
 const SECTIONS: [string, string][] = [
   ['Dispatch times', 'Every order is packed and handed to the courier within 24 working hours of being placed. Orders placed on Sunday or a public holiday are dispatched the next working morning.'],
   ['Delivery estimates', 'Metro cities: 2 to 4 working days. Tier-two cities and towns: 3 to 5 working days. Remote pin codes and the North East: 5 to 8 working days. These are courier estimates, not guarantees, and festive weeks run slower across the industry.'],
-  ['Charges', 'Shipping is complimentary on every order above the free-shipping threshold shown in your cart. Below it, a single flat rate applies regardless of weight or destination. Cash on delivery carries no additional fee anywhere in India.'],
+  ['Charges', 'Shipping is 100% complimentary on every single order across India with no minimum order value. Cash on delivery carries no additional fee anywhere in India.'],
   ['Tracking', 'A tracking link is emailed the moment the parcel leaves our workshop, and again if the courier reschedules. Signed-in customers can also follow the order from the account area.'],
   ['Failed deliveries', 'Couriers attempt delivery three times. If all three fail, the parcel returns to us and we refund the order minus the actual return-shipping cost. Please make sure the phone number on the order is reachable.'],
   ['International orders', 'We do not ship outside India through the website yet. Message us on WhatsApp with your destination city and we will quote a courier rate directly.'],

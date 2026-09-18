@@ -5,13 +5,38 @@ import { ProductGrid } from '@/components/product-card';
 import { FilterPanel, SortBar, ActiveChips, Pagination } from '@/components/shop-filters';
 import { Empty } from '@/components/ui';
 import { GridSkeleton } from '@/components/grid-skeleton';
-import { PRICE_BANDS } from '@/lib/site';
+import { PRICE_BANDS, SITE, absoluteUrl } from '@/lib/site';
+import { JsonLd } from '@/components/json-ld';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Shop all jewellery',
-  description: 'Browse every piece — kundan, polki, temple, oxidised silver and pearl, filtered by material, occasion and price.',
+  title: `Shop All Imitation & Bridal Jewellery Online | ${SITE.brandName}`,
+  description:
+    'Browse hand-finished imitation jewellery: bridal sets, kundan necklaces, polki chokers, temple jewellery, and oxidised silver. Dispatched nationwide with 6-month warranty.',
+  alternates: { canonical: '/shop' },
+  openGraph: {
+    title: `Shop All Imitation & Bridal Jewellery Online | ${SITE.brandName}`,
+    description:
+      'Browse hand-finished imitation jewellery: bridal sets, kundan necklaces, polki chokers, temple jewellery, and oxidised silver.',
+    url: '/shop',
+    type: 'website',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'Shop Imitation Jewellery — Radhe Krishna Collection',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `Shop All Imitation & Bridal Jewellery Online | ${SITE.brandName}`,
+    description:
+      'Browse hand-finished imitation jewellery: bridal sets, kundan necklaces, polki chokers, temple jewellery, and oxidised silver.',
+    images: ['/opengraph-image'],
+  },
 };
 
 type SP = Record<string, string | string[] | undefined>;
@@ -76,9 +101,35 @@ export async function ShopResults({
 export default async function ShopPage({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
   const q = typeof sp.q === 'string' ? sp.q : undefined;
+  const shopUrl = absoluteUrl('/shop');
 
   return (
     <>
+      <JsonLd
+        data={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.url },
+              { '@type': 'ListItem', position: 2, name: 'Shop', item: shopUrl },
+            ],
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: 'All Jewellery Collections',
+            description:
+              'Browse the full catalogue of hand-finished imitation jewellery on solid brass: bridal, kundan, polki, temple, and oxidised silver.',
+            url: shopUrl,
+            isPartOf: {
+              '@type': 'WebSite',
+              name: SITE.brandName,
+              url: SITE.url,
+            },
+          },
+        ]}
+      />
       <header className="border-b border-line bg-canvas-2">
         <div className="container-lux py-14 text-center lg:py-20">
           <span className="label">{q ? 'Search results' : 'The full collection'}</span>

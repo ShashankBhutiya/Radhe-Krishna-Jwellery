@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { orderNumber } from '@/lib/utils';
-import { SITE } from '@/lib/site';
+import { isRazorpayConfigured, verifyRazorpaySignature } from '@/lib/razorpay';
 
 const schema = z.object({
   customerName: z.string().min(2, 'Enter the full name'),
@@ -17,6 +17,9 @@ const schema = z.object({
   paymentMethod: z.enum(['COD', 'ONLINE']),
   couponCode: z.string().optional().or(z.literal('')),
   notes: z.string().optional().or(z.literal('')),
+  razorpayOrderId: z.string().optional().or(z.literal('')),
+  razorpayPaymentId: z.string().optional().or(z.literal('')),
+  razorpaySignature: z.string().optional().or(z.literal('')),
   items: z
     .array(z.object({ id: z.string(), qty: z.number().int().min(1) }))
     .min(1, 'Your bag is empty'),
@@ -30,6 +33,26 @@ export async function POST(req: Request) {
   }
 
   const d = parsed.data;
+
+  // If online payment is processed with active Razorpay keys, verify the HMAC signature
+  if (d.paymentMethod === 'ONLINE' && isRazorpayConfigured()) {
+    if (!d.razorpayOrderId || !d.razorpayPaymentId || !d.razorpaySignature) {
+      return NextResponse.json({ error: 'Incomplete Razorpay payment verification details.' }, { status: 400 });
+    }
+
+    const isValid = verifyRazorpaySignature({
+      razorpayOrderId: d.razorpayOrderId,
+      razorpayPaymentId: d.razorpayPaymentId,
+      razorpaySignature: d.razorpaySignature,
+    });
+
+    if (!isValid) {
+      return NextResponse.json(
+        { error: 'Payment signature verification failed. Your payment may not have been confirmed.' },
+        { status: 400 },
+      );
+    }
+  }
 
   // Re-read prices from the database; never trust client-side totals.
   const products = await prisma.product.findMany({
@@ -57,7 +80,6 @@ export async function POST(req: Request) {
   const subtotal = lines.reduce((s, l) => s + l.product.price * l.qty, 0);
 
   let discount = 0;
-  let freeShipping = false;
   let appliedCode: string | null = null;
 
   if (d.couponCode) {
@@ -71,9 +93,7 @@ export async function POST(req: Request) {
 
     if (usable && coupon) {
       appliedCode = coupon.code;
-      if (coupon.code === 'FREESHIP') {
-        freeShipping = true;
-      } else {
+      if (coupon.code !== 'FREESHIP') {
         discount = coupon.type === 'PERCENT' ? Math.round((subtotal * coupon.value) / 100) : coupon.value;
         if (coupon.maxDiscount != null) discount = Math.min(discount, coupon.maxDiscount);
         discount = Math.min(discount, subtotal);
@@ -82,8 +102,8 @@ export async function POST(req: Request) {
     }
   }
 
-  const shipping = freeShipping || subtotal - discount >= SITE.freeShippingAbove ? 0 : SITE.shippingFlat;
-  const total = subtotal - discount + shipping;
+  const shipping = 0;
+  const total = subtotal - discount;
 
   const order = await prisma.$transaction(async (tx) => {
     const created = await tx.order.create({
@@ -105,6 +125,9 @@ export async function POST(req: Request) {
         couponCode: appliedCode,
         paymentMethod: d.paymentMethod,
         paymentStatus: d.paymentMethod === 'ONLINE' ? 'PAID' : 'PENDING',
+        razorpayOrderId: d.razorpayOrderId || null,
+        razorpayPaymentId: d.razorpayPaymentId || null,
+        razorpaySignature: d.razorpaySignature || null,
         status: 'PLACED',
         notes: d.notes || null,
         items: {

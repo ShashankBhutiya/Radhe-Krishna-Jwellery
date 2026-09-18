@@ -125,6 +125,12 @@ export default async function OrderPage({ params }: { params: Promise<{ orderNum
                 <dt className="text-ink-2">Status</dt>
                 <dd className="text-gold-deep">{order.paymentStatus === 'PAID' ? 'Payment received' : 'Due on delivery'}</dd>
               </div>
+              {order.razorpayPaymentId ? (
+                <div className="flex justify-between">
+                  <dt className="text-ink-2">Payment ID</dt>
+                  <dd className="font-mono text-xs text-ink">{order.razorpayPaymentId}</dd>
+                </div>
+              ) : null}
             </dl>
           </div>
         </div>

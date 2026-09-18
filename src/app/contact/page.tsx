@@ -1,23 +1,69 @@
 import type { Metadata } from 'next';
 import { MapPin, Phone, Mail, Clock, MessageCircle } from 'lucide-react';
 import { ContactForm } from '@/components/contact-form';
-import { SITE, addressLine } from '@/lib/site';
+import { SITE, addressLine, absoluteUrl } from '@/lib/site';
+import { JsonLd } from '@/components/json-ld';
 
 export const metadata: Metadata = {
-  title: 'Contact us',
-  description: 'Questions about an order, a bulk enquiry, or a custom piece — we reply within one working day.',
+  title: `Contact Us | Indore Workshop & Customer Care | ${SITE.brandName}`,
+  description:
+    'Get in touch with Radhe Krishna Collection in Indore for order tracking, bridal consultations, custom pieces, and bulk wedding orders. Quick WhatsApp and phone support.',
+  alternates: { canonical: '/contact' },
+  openGraph: {
+    title: `Contact Us | ${SITE.brandName} — Indore`,
+    description:
+      'Questions about an order, custom bridal suite or bulk wedding gifts. Dispatched and crafted from Indore, India.',
+    url: '/contact',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: `Contact Us | ${SITE.brandName} — Indore`,
+    description:
+      'Reach out for customer care, wedding orders and workshop enquiries in Indore.',
+  },
 };
 
 export default function ContactPage() {
   const details = [
-    { icon: MapPin, label: 'Workshop & store', value: addressLine() },
+    { icon: MapPin, label: 'Workshop & store', value: addressLine() || `${SITE.address.city}, ${SITE.address.state}` },
     { icon: Phone, label: 'Phone', value: SITE.phone, href: SITE.phoneHref },
     { icon: Mail, label: 'Email', value: SITE.email, href: SITE.email ? 'mailto:' + SITE.email : '' },
     { icon: Clock, label: 'Hours', value: SITE.hours },
   ].filter((d) => d.value);
 
+  const contactSchema = {
+    '@context': 'https://schema.org',
+    '@type': ['ContactPage', 'JewelryStore', 'LocalBusiness'],
+    name: `${SITE.name} Customer Support & Workshop`,
+    url: absoluteUrl('/contact'),
+    telephone: SITE.phone,
+    email: SITE.email,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: SITE.address.city,
+      addressRegion: SITE.address.state,
+      postalCode: SITE.address.pincode,
+      addressCountry: SITE.address.countryCode,
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: SITE.geo.latitude,
+      longitude: SITE.geo.longitude,
+    },
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        opens: '10:00',
+        closes: '20:00',
+      },
+    ],
+  };
+
   return (
     <>
+      <JsonLd data={contactSchema} />
       <header className="border-b border-line bg-canvas-2">
         <div className="container-lux py-14 text-center lg:py-20">
           <span className="label">We are listening</span>

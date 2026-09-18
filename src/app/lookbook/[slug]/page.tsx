@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { formatDate } from '@/lib/utils';
+import { absoluteUrl, SITE } from '@/lib/site';
+import { JsonLd } from '@/components/json-ld';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +14,30 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const post = await prisma.post.findUnique({ where: { slug } });
   if (!post) return { title: 'Entry not found' };
-  return { title: post.title, description: post.excerpt };
+
+  const title = `${post.title} — The Lookbook`;
+  const description = post.excerpt;
+  const coverUrl = absoluteUrl(post.cover);
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/lookbook/${post.slug}` },
+    openGraph: {
+      type: 'article',
+      title,
+      description,
+      url: `/lookbook/${post.slug}`,
+      publishedTime: post.publishedAt.toISOString(),
+      images: [{ url: coverUrl, alt: post.title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [coverUrl],
+    },
+  };
 }
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -20,6 +45,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   const post = await prisma.post.findUnique({ where: { slug } });
   if (!post) notFound();
+
+  const articleUrl = absoluteUrl(`/lookbook/${post.slug}`);
 
   const more = await prisma.post.findMany({
     where: { slug: { not: slug } },
@@ -29,6 +56,39 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   return (
     <article>
+      <JsonLd
+        data={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.url },
+              { '@type': 'ListItem', position: 2, name: 'Lookbook', item: absoluteUrl('/lookbook') },
+              { '@type': 'ListItem', position: 3, name: post.title, item: articleUrl },
+            ],
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: post.title,
+            description: post.excerpt,
+            image: absoluteUrl(post.cover),
+            datePublished: post.publishedAt.toISOString(),
+            dateModified: post.publishedAt.toISOString(),
+            author: { '@type': 'Organization', name: post.author || SITE.name },
+            publisher: {
+              '@type': 'Organization',
+              name: SITE.name,
+              url: SITE.url,
+              logo: {
+                '@type': 'ImageObject',
+                url: `${SITE.url}/apple-icon`,
+              },
+            },
+            mainEntityOfPage: articleUrl,
+          },
+        ]}
+      />
       <div className="relative h-[46vh] min-h-[320px] overflow-hidden">
         <Image src={post.cover} alt={post.title} fill priority sizes="100vw" className="object-cover" />
         <div className="absolute inset-0 bg-ink/55" />

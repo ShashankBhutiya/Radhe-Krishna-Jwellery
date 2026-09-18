@@ -4,11 +4,22 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { formatDate } from '@/lib/utils';
 
+import { SITE } from '@/lib/site';
+
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'The Lookbook',
-  description: 'Styling notes, craft explainers and the thinking behind each collection.',
+  title: `The Lookbook — Jewellery Styling & Craft Journal | ${SITE.brandName}`,
+  description:
+    'Styling notes, bridal jewellery guides, jewellery care tips and the stories behind our imitation jewellery collections.',
+  alternates: { canonical: '/lookbook' },
+  openGraph: {
+    title: `The Lookbook | ${SITE.brandName}`,
+    description:
+      'Styling notes, bridal guides and craft explainers behind each imitation jewellery collection.',
+    url: '/lookbook',
+    type: 'website',
+  },
 };
 
 export default async function LookbookPage() {

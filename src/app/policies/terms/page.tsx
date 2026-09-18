@@ -3,8 +3,9 @@ import Link from 'next/link';
 import { SITE } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'Terms of service',
-  description: 'Terms of service for ' + SITE.name + '.',
+  title: `Terms of Service | ${SITE.brandName}`,
+  description: `Terms and conditions of sale, warranty guidelines, and order policies for ${SITE.name}.`,
+  alternates: { canonical: '/policies/terms' },
 };
 
 const SECTIONS: [string, string][] = [

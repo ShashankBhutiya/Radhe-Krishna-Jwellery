@@ -3,8 +3,9 @@ import Link from 'next/link';
 import { SITE } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'Privacy policy',
-  description: 'Privacy policy for ' + SITE.name + '.',
+  title: `Privacy Policy | ${SITE.brandName}`,
+  description: `Customer data privacy, payment security, and cookie policies for ${SITE.name}.`,
+  alternates: { canonical: '/policies/privacy' },
 };
 
 const SECTIONS: [string, string][] = [
