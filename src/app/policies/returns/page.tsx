@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { SITE } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: `Cancellation, Returns & Refund Policy | ${SITE.brandName}`,
+  title: 'Cancellation, Returns & Refund Policy',
   description: `Easy cancellations before dispatch, 7-day hassle-free returns, 5-7 day refunds to original payment source, and 6-month plating warranty for ${SITE.name}.`,
   alternates: { canonical: '/policies/returns' },
 };

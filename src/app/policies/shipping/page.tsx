@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { SITE } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: `Shipping & Delivery Policy | ${SITE.brandName}`,
+  title: 'Shipping & Delivery Policy',
   description: `Dispatch timelines, shipping rates, pan-India courier delivery, and COD information for ${SITE.name}.`,
   alternates: { canonical: '/policies/shipping' },
 };

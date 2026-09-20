@@ -142,7 +142,7 @@ export function CheckoutForm({ user, addresses }: Props) {
             currency: orderData.currency || 'INR',
             name: SITE.brandName,
             description: `Order for ${items.length} piece${items.length === 1 ? '' : 's'}`,
-            image: '/apple-icon',
+            image: '/apple-touch-icon.png',
             order_id: orderData.razorpayOrderId,
             prefill: {
               name: form.customerName,

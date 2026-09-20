@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Minus, Plus, ShoppingBag, Truck, RotateCcw, ShieldCheck, ChevronDown, Star, Check } from 'lucide-react';
 import { useCart } from '@/store/cart';
 import { useRecent, useUI } from '@/store/ui';
+import { useAuth } from '@/store/auth';
 import { WishlistButton } from '@/components/product-card';
 import { Stars, Spinner } from '@/components/ui';
 import { cn, formatDate } from '@/lib/utils';
@@ -86,6 +87,7 @@ export function AddToCartPanel({
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const add = useCart((s) => s.add);
+  const user = useAuth((s) => s.user);
   const openCart = useUI((s) => s.openCart);
   const toast = useUI((s) => s.toast);
   const router = useRouter();
@@ -95,6 +97,18 @@ export function AddToCartPanel({
 
   function addToBag(then?: () => void) {
     if (soldOut) return;
+
+    if (!user) {
+      if (then) {
+        router.push('/login?next=/checkout&reason=checkout');
+      } else {
+        toast('Please sign in to add items to your bag', 'info');
+        const next = `/product/${product.slug}`;
+        router.push(`/login?next=${encodeURIComponent(next)}&reason=bag`);
+      }
+      return;
+    }
+
     add(
       {
         id: product.id,

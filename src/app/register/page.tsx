@@ -11,9 +11,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string; reason?: string }>;
+}) {
   const [session, sp] = await Promise.all([getSession(), searchParams]);
   if (session) redirect(sp.next || '/account');
 
-  return <AuthForm mode="register" next={sp.next} />;
+  return <AuthForm mode="register" next={sp.next} reason={sp.reason} />;
 }

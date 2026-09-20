@@ -9,7 +9,6 @@ import {
   CategoryStrip,
   EditorialSplit,
   OccasionTiles,
-  Testimonials,
   LookbookTeaser,
   NewsletterBand,
 } from '@/components/home';
@@ -76,8 +75,6 @@ export default async function HomePage() {
           <ProductRail products={sections.newest.slice(0, 4)} />
         </section>
       ) : null}
-
-      <Testimonials />
 
       <LookbookTeaser posts={posts} />
 

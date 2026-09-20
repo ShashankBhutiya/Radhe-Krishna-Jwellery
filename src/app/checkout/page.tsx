@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { CheckoutForm } from '@/components/checkout-form';
@@ -13,20 +14,19 @@ export const metadata: Metadata = {
 
 export default async function CheckoutPage() {
   const session = await getSession();
+  if (!session) {
+    redirect('/login?next=/checkout&reason=checkout');
+  }
 
   const [user, addresses] = await Promise.all([
-    session
-      ? prisma.user.findUnique({
-          where: { id: session.id },
-          select: { name: true, email: true, phone: true },
-        })
-      : null,
-    session
-      ? prisma.address.findMany({
-          where: { userId: session.id },
-          orderBy: [{ isDefault: 'desc' }, { id: 'asc' }],
-        })
-      : [],
+    prisma.user.findUnique({
+      where: { id: session.id },
+      select: { name: true, email: true, phone: true },
+    }),
+    prisma.address.findMany({
+      where: { userId: session.id },
+      orderBy: [{ isDefault: 'desc' }, { id: 'asc' }],
+    }),
   ]);
 
   return (

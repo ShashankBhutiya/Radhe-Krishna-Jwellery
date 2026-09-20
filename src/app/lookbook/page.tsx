@@ -9,7 +9,7 @@ import { SITE } from '@/lib/site';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: `The Lookbook — Jewellery Styling & Craft Journal | ${SITE.brandName}`,
+  title: 'Jewellery Styling & Care — The Lookbook',
   description:
     'Styling notes, bridal jewellery guides, jewellery care tips and the stories behind our imitation jewellery collections.',
   alternates: { canonical: '/lookbook' },

@@ -1,5 +1,6 @@
 import { prisma } from './prisma';
 import type { Prisma } from '@prisma/client';
+import { cache } from 'react';
 
 export const productCard = {
   id: true,
@@ -101,7 +102,7 @@ export async function getProducts(f: ShopFilters = {}) {
   return { items, total, page, perPage, pages: Math.max(1, Math.ceil(total / perPage)) };
 }
 
-export async function getProductBySlug(slug: string) {
+export const getProductBySlug = cache(async (slug: string) => {
   const p = await prisma.product.findUnique({
     where: { slug },
     include: {
@@ -114,7 +115,7 @@ export async function getProductBySlug(slug: string) {
   const count = p.reviews.length;
   const avg = count ? p.reviews.reduce((s, r) => s + r.rating, 0) / count : 0;
   return { ...p, rating: Math.round(avg * 10) / 10, reviewCount: count };
-}
+});
 
 export async function getRelatedProducts(categoryId: string, excludeId: string, take = 4) {
   const rows = await prisma.product.findMany({
@@ -136,12 +137,12 @@ export async function getProductsByIds(ids: string[]) {
   return ids.map((id) => byId.get(id)).filter(Boolean) as CardProduct[];
 }
 
-export async function getCategories() {
+export const getCategories = cache(async () => {
   return prisma.category.findMany({
     orderBy: { sortOrder: 'asc' },
-    include: { _count: { select: { products: true } } },
+    include: { _count: { select: { products: { where: { isActive: true } } } } },
   });
-}
+});
 
 export async function getHomeSections() {
   const [featured, newest, bestsellers] = await Promise.all([

@@ -1,0 +1,37 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGrad" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#4b3425" />
+      <stop offset="55%" stop-color="#2c1f17" />
+      <stop offset="100%" stop-color="#191310" />
+    </radialGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8e5b8" />
+      <stop offset="40%" stop-color="#d6aa58" />
+      <stop offset="80%" stop-color="#b68936" />
+      <stop offset="100%" stop-color="#e7c680" />
+    </linearGradient>
+    <filter id="goldGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10.24" flood-color="#000000" flood-opacity="0.85" />
+    </filter>
+  </defs>
+
+  <!-- Background tile with subtle luxury rounded corners -->
+  <rect x="11.5" y="11.5" width="489" height="489" rx="113" fill="url(#bgGrad)" stroke="url(#goldGrad)" stroke-width="23" />
+
+  <!-- Inner delicate border for larger sizes -->
+  <rect x="50.6" y="50.6" width="410.8" height="410.8" rx="79.1" fill="none" stroke="#d6aa58" stroke-width="8.049999999999999" opacity="0.4" />
+
+  <!-- RK Monogram -->
+  <text
+    x="50%"
+    y="333"
+    text-anchor="middle"
+    font-family="'Cormorant Garamond', 'Cinzel', 'Georgia', 'Playfair Display', serif"
+    font-size="246px"
+    font-weight="600"
+    letter-spacing="-8px"
+    fill="url(#goldGrad)"
+    filter="url(#goldGlow)"
+  >RK</text>
+</svg>

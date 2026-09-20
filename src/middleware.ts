@@ -31,9 +31,13 @@ export async function middleware(req: NextRequest) {
     if (!session) return signIn();
   }
 
+  if (pathname.startsWith('/checkout')) {
+    if (!session) return signIn('checkout');
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/account/:path*'],
+  matcher: ['/admin/:path*', '/account/:path*', '/checkout/:path*'],
 };

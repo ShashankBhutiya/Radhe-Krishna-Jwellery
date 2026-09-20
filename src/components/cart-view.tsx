@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Minus, Plus, Trash2, Tag, ArrowRight, X } from 'lucide-react';
 import { useCart } from '@/store/cart';
 import { useUI } from '@/store/ui';
+import { useAuth } from '@/store/auth';
 import { WishlistButton } from '@/components/product-card';
 import { Empty, Spinner } from '@/components/ui';
 import { cn, inr } from '@/lib/utils';
@@ -209,6 +210,7 @@ export function OrderSummary({
 
 export function CartView() {
   const { items, setQty, remove, subtotal, savings } = useCart();
+  const user = useAuth((s) => s.user);
   const toast = useUI((s) => s.toast);
   const [mounted, setMounted] = useState(false);
 
@@ -333,7 +335,10 @@ export function CartView() {
         </div>
 
         <OrderSummary subtotal={sub} discount={discount} shipping={shipping} savings={savings()}>
-          <Link href="/checkout" className="btn-primary group mt-6 w-full">
+          <Link
+            href={user ? '/checkout' : '/login?next=/checkout&reason=checkout'}
+            className="btn-primary group mt-6 w-full"
+          >
             Proceed to checkout
             <ArrowRight size={14} strokeWidth={1.8} className="transition-transform group-hover:translate-x-1" />
           </Link>

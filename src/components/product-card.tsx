@@ -2,10 +2,12 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { Heart, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/store/cart';
 import { useWishlist } from '@/store/wishlist';
 import { useUI } from '@/store/ui';
+import { useAuth } from '@/store/auth';
 import { cn, discountPct } from '@/lib/utils';
 import { Price, Stars, Badge } from '@/components/ui';
 import type { CardProduct } from '@/lib/queries';
@@ -21,7 +23,10 @@ export function WishlistButton({
 }) {
   const ids = useWishlist((s) => s.ids);
   const toggle = useWishlist((s) => s.toggle);
+  const user = useAuth((s) => s.user);
   const toast = useUI((s) => s.toast);
+  const router = useRouter();
+  const pathname = usePathname();
   const active = ids.includes(productId);
 
   return (
@@ -32,6 +37,14 @@ export function WishlistButton({
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
+
+        if (!user) {
+          toast('Please sign in to save items to your wishlist', 'info');
+          const next = pathname || '/';
+          router.push(`/login?next=${encodeURIComponent(next)}&reason=wishlist`);
+          return;
+        }
+
         toggle(productId);
         toast(active ? 'Removed from your wishlist' : 'Saved to your wishlist');
       }}
@@ -48,8 +61,11 @@ export function WishlistButton({
 
 export function ProductCard({ product, index = 0 }: { product: CardProduct; index?: number }) {
   const add = useCart((s) => s.add);
+  const user = useAuth((s) => s.user);
   const openCart = useUI((s) => s.openCart);
   const toast = useUI((s) => s.toast);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const img = product.images[0]?.url;
   const hoverImg = product.images[1]?.url ?? img;
@@ -60,6 +76,14 @@ export function ProductCard({ product, index = 0 }: { product: CardProduct; inde
     e.preventDefault();
     e.stopPropagation();
     if (soldOut) return;
+
+    if (!user) {
+      toast('Please sign in to add items to your bag', 'info');
+      const next = pathname || '/';
+      router.push(`/login?next=${encodeURIComponent(next)}&reason=bag`);
+      return;
+    }
+
     add({
       id: product.id,
       name: product.name,

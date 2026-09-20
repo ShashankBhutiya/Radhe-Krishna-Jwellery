@@ -6,7 +6,7 @@ import { inr } from '@/lib/utils';
 import { JsonLd } from '@/components/json-ld';
 
 export const metadata: Metadata = {
-  title: `Frequently Asked Questions | Shipping, Returns & Warranty | ${SITE.brandName}`,
+  title: 'Jewellery, Delivery & Returns FAQ',
   description:
     'Answers to common questions regarding our imitation jewellery: sizing, pan-India shipping, 7-day return policy, 6-month plating warranty, and care tips.',
   alternates: { canonical: '/faq' },

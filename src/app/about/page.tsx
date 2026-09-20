@@ -9,7 +9,7 @@ import { JsonLd } from '@/components/json-ld';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: `Our Story & Atelier | Handcrafted in Indore | ${SITE.brandName}`,
+  title: 'Our Story — Imitation Jewellery in Indore',
   description:
     'Learn how Radhe Krishna crafts heirloom-grade imitation jewellery on solid cast brass in Indore. Hand-set kundan, triple-dipped micron plating, nickel-free and backed by a 6-month warranty.',
   alternates: { canonical: '/about' },

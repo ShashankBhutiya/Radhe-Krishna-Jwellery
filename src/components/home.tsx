@@ -39,8 +39,8 @@ export function Hero({ image, secondary }: { image: string; secondary: string })
 
           <dl className="mt-14 grid max-w-lg grid-cols-3 gap-6 border-t border-line pt-8">
             {[
-              { k: '66+', v: 'Pieces in stock' },
-              { k: '4.8/5', v: 'Average rating' },
+              { k: 'India', v: 'Nationwide delivery' },
+              { k: '7 days', v: 'Return window' },
               { k: '6 mo', v: 'Plating warranty' },
             ].map((s) => (
               <div key={s.v}>

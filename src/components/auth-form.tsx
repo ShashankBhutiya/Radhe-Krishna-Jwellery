@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Check } from 'lucide-react';
 import { Spinner } from '@/components/ui';
 import { useUI } from '@/store/ui';
+import { useAuth } from '@/store/auth';
 
 const PERKS = [
   'Track every order from placed to delivered',
@@ -16,6 +17,9 @@ const PERKS = [
 
 const REASONS: Record<string, string> = {
   'admin-only': 'That area is for store staff. Sign in with an admin account to continue.',
+  'bag': 'Please sign in or create an account to add pieces to your shopping bag.',
+  'wishlist': 'Please sign in or create an account to save pieces to your wishlist.',
+  'checkout': 'Please sign in or create an account to place your order.',
 };
 
 export function AuthForm({
@@ -61,6 +65,7 @@ export function AuthForm({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Something went wrong');
 
+      useAuth.getState().setUser(data.user);
       toast(isLogin ? `Welcome back, ${data.user.name.split(' ')[0]}` : 'Your account is ready');
       router.push(next || (data.user.role === 'ADMIN' ? '/admin' : '/account'));
       router.refresh();
@@ -69,6 +74,11 @@ export function AuthForm({
       setBusy(false);
     }
   }
+
+  const switchParams = new URLSearchParams();
+  if (next) switchParams.set('next', next);
+  if (reason) switchParams.set('reason', reason);
+  const switchQuery = switchParams.toString() ? `?${switchParams.toString()}` : '';
 
   return (
     <div className="container-lux py-14 lg:py-20">
@@ -194,7 +204,7 @@ export function AuthForm({
           <p className="mt-6 text-center text-[13px] text-ink-2">
             {isLogin ? 'New to Radhe Krishna?' : 'Already have an account?'}{' '}
             <Link
-              href={isLogin ? '/register' : '/login'}
+              href={isLogin ? `/register${switchQuery}` : `/login${switchQuery}`}
               className="text-gold-deep underline underline-offset-4 hover:text-ink"
             >
               {isLogin ? 'Create an account' : 'Sign in'}

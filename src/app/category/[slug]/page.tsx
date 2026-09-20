@@ -5,42 +5,26 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { ChevronRight } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
-import { ShopResults } from '@/app/shop/page';
+import { ShopResults } from '@/components/shop-results';
 import { GridSkeleton } from '@/components/grid-skeleton';
 import { JsonLd } from '@/components/json-ld';
 import { SITE, absoluteUrl } from '@/lib/site';
+import { catalogMetadata } from '@/lib/catalog-seo';
 
 export const dynamic = 'force-dynamic';
 
 type SP = Record<string, string | string[] | undefined>;
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<SP> }): Promise<Metadata> {
   const { slug } = await params;
   const category = await prisma.category.findUnique({ where: { slug } });
-  if (!category) return { title: 'Collection not found' };
+  if (!category) notFound();
 
-  const title = `${category.name} Collection — Imitation Jewellery Online`;
-  const description = `${category.description ?? category.tagline ?? ''} Hand-crafted ${category.name.toLowerCase()} in antique gold finish, solid brass base, skin-safe and delivered pan-India with 6-month warranty.`;
+  const title = `${category.name} Online`;
+  const description = category.description || `Explore ${category.name.toLowerCase()} at ${SITE.brandName}. Shop imitation jewellery with delivery across India.`;
   const image = category.image;
 
-  return {
-    title,
-    description,
-    alternates: { canonical: `/category/${category.slug}` },
-    openGraph: {
-      title: `${category.name} Collection | ${SITE.brandName}`,
-      description,
-      url: `/category/${category.slug}`,
-      type: 'website',
-      images: image ? [{ url: image, alt: `${category.name} Collection` }] : [],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${category.name} Collection | ${SITE.brandName}`,
-      description,
-      images: image ? [image] : [],
-    },
-  };
+  return catalogMetadata(`/category/${category.slug}`, title, description, await searchParams, image || undefined);
 }
 
 export default async function CategoryPage({
@@ -54,7 +38,7 @@ export default async function CategoryPage({
 
   const category = await prisma.category.findUnique({
     where: { slug },
-    include: { _count: { select: { products: true } } },
+    include: { _count: { select: { products: { where: { isActive: true } } } } },
   });
   if (!category) notFound();
 

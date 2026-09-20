@@ -1,16 +1,11 @@
 import type { MetadataRoute } from 'next';
-import { SITE_URL } from '@/lib/site';
+import { SITE_URL } from '../lib/site';
 
 export default function robots(): MetadataRoute.Robots {
   const privateRoutes = [
     '/admin/',
     '/account/',
     '/api/',
-    '/cart',
-    '/checkout',
-    '/wishlist',
-    '/login',
-    '/register',
     '/order/',
   ];
 
@@ -18,17 +13,17 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
+        allow: ['/', '/api/uploads/'],
         disallow: privateRoutes,
       },
       {
         userAgent: ['Googlebot', 'Googlebot-Image', 'Bingbot', 'Applebot'],
-        allow: '/',
+        allow: ['/', '/api/uploads/'],
         disallow: privateRoutes,
       },
       {
         userAgent: ['GPTBot', 'PerplexityBot', 'ClaudeBot', 'Google-Extended'],
-        allow: '/',
+        allow: ['/', '/api/uploads/'],
         disallow: privateRoutes,
       },
     ],

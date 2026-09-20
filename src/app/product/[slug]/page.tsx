@@ -24,10 +24,10 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
-  if (!product) return { title: 'Piece not found' };
+  if (!product) notFound();
 
   const title = `${product.name} — ${product.category.name}`;
-  const description = `${product.shortDesc} Hand-finished imitation jewellery on solid brass with 6-month warranty and 7-day easy returns. Pan-India shipping from Indore.`;
+  const description = product.shortDesc.trim() || `${product.name} in ${product.material.toLowerCase()}. Shop ${product.category.name.toLowerCase()} with delivery across India.`;
   const primaryImage = product.images[0]?.url;
 
   return {
@@ -69,7 +69,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     ['Collection', product.category.name],
   ];
   const productUrl = absoluteUrl(`/product/${product.slug}`);
-  const priceValidUntil = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
   const productSchema: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -93,7 +92,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       url: productUrl,
       priceCurrency: SITE.currency,
       price: product.price,
-      priceValidUntil,
       availability: `https://schema.org/${product.stock > 0 ? 'InStock' : 'OutOfStock'}`,
       itemCondition: 'https://schema.org/NewCondition',
       seller: { '@type': 'Organization', name: SITE.name },
@@ -109,7 +107,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         '@type': 'OfferShippingDetails',
         shippingRate: {
           '@type': 'MonetaryAmount',
-          value: 0,
+          value: product.price >= SITE.freeShippingAbove ? 0 : SITE.shippingFlat,
           currency: SITE.currency,
         },
         shippingDestination: {
@@ -127,14 +125,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           transitTime: {
             '@type': 'QuantitativeValue',
             minValue: 2,
-            maxValue: 7,
+            maxValue: 8,
             unitCode: 'DAY',
           },
         },
       },
     },
   };
-  if (product.reviewCount > 0) {
+  // The seed contains generated reviews. Enable review rich results only after
+  // the owner has audited the catalogue and removed all demonstration reviews.
+  if (process.env.PRODUCT_REVIEWS_VERIFIED === 'true' && product.reviewCount > 0) {
     productSchema.aggregateRating = {
       '@type': 'AggregateRating',
       ratingValue: product.rating,

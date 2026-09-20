@@ -264,8 +264,9 @@ export function Pagination({ page, pages }: { page: number; pages: number }) {
 
   const href = (p: number) => {
     const next = new URLSearchParams(params.toString());
-    next.set('page', String(p));
-    return `${pathname}?${next.toString()}`;
+    if (p === 1) next.delete('page');
+    else next.set('page', String(p));
+    return next.size ? `${pathname}?${next.toString()}` : pathname;
   };
 
   // Compact window around the current page.

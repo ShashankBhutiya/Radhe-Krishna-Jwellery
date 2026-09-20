@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useWishlist } from '@/store/wishlist';
+import { useAuth } from '@/store/auth';
 import { ProductGrid } from '@/components/product-card';
 import { Empty } from '@/components/ui';
 import { GridSkeleton } from '@/components/grid-skeleton';
@@ -9,6 +10,7 @@ import type { CardProduct } from '@/lib/queries';
 
 export function WishlistView() {
   const ids = useWishlist((s) => s.ids);
+  const user = useAuth((s) => s.user);
   const [products, setProducts] = useState<CardProduct[] | null>(null);
 
   useEffect(() => {
@@ -31,6 +33,16 @@ export function WishlistView() {
       cancelled = true;
     };
   }, [ids]);
+
+  if (!user) {
+    return (
+      <Empty
+        title="Sign in to view your wishlist"
+        copy="Your saved pieces will appear here once you sign in to your account."
+        action={{ href: '/login?next=/wishlist&reason=wishlist', label: 'Sign in / Create account' }}
+      />
+    );
+  }
 
   if (products === null) return <GridSkeleton count={4} />;
 

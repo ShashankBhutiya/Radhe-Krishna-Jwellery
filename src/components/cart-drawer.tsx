@@ -6,12 +6,14 @@ import Link from 'next/link';
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/store/cart';
 import { useUI } from '@/store/ui';
+import { useAuth } from '@/store/auth';
 import { cn, inr } from '@/lib/utils';
 import { SITE } from '@/lib/site';
 
 export function CartDrawer() {
   const { items, setQty, remove, subtotal, savings } = useCart();
   const { cartOpen, closeCart } = useUI();
+  const user = useAuth((s) => s.user);
 
   const total = subtotal();
   const saved = savings();
@@ -158,7 +160,11 @@ export function CartDrawer() {
               </div>
             </dl>
 
-            <Link href="/checkout" onClick={closeCart} className="btn-primary mt-5 w-full">
+            <Link
+              href={user ? '/checkout' : '/login?next=/checkout&reason=checkout'}
+              onClick={closeCart}
+              className="btn-primary mt-5 w-full"
+            >
               Proceed to checkout
             </Link>
             <Link href="/cart" onClick={closeCart} className="mt-3 block text-center text-[11px] uppercase tracking-label text-ink-2 hover:text-gold-deep">

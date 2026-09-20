@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { MapPin, Phone, Mail, Clock, MessageCircle } from 'lucide-react';
 import { ContactForm } from '@/components/contact-form';
 import { SITE, addressLine, absoluteUrl } from '@/lib/site';
 import { JsonLd } from '@/components/json-ld';
 
 export const metadata: Metadata = {
-  title: `Contact Us | Indore Workshop & Customer Care | ${SITE.brandName}`,
+  title: 'Contact Us — Jewellery in Indore',
   description:
     'Get in touch with Radhe Krishna Collection in Indore for order tracking, bridal consultations, custom pieces, and bulk wedding orders. Quick WhatsApp and phone support.',
   alternates: { canonical: '/contact' },
@@ -34,31 +35,10 @@ export default function ContactPage() {
 
   const contactSchema = {
     '@context': 'https://schema.org',
-    '@type': ['ContactPage', 'JewelryStore', 'LocalBusiness'],
+    '@type': 'ContactPage',
     name: `${SITE.name} Customer Support & Workshop`,
     url: absoluteUrl('/contact'),
-    telephone: SITE.phone,
-    email: SITE.email,
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: SITE.address.city,
-      addressRegion: SITE.address.state,
-      postalCode: SITE.address.pincode,
-      addressCountry: SITE.address.countryCode,
-    },
-    geo: {
-      '@type': 'GeoCoordinates',
-      latitude: SITE.geo.latitude,
-      longitude: SITE.geo.longitude,
-    },
-    openingHoursSpecification: [
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-        opens: '10:00',
-        closes: '20:00',
-      },
-    ],
+    mainEntity: { '@id': `${SITE.url}/#organization` },
   };
 
   return (
@@ -67,7 +47,7 @@ export default function ContactPage() {
       <header className="border-b border-line bg-canvas-2">
         <div className="container-lux py-14 text-center lg:py-20">
           <span className="label">We are listening</span>
-          <h1 className="display-lg mt-4">Get in touch</h1>
+          <h1 className="display-lg mt-4">Contact Radhe Krishna in Indore</h1>
           <span className="mx-auto mt-5 block h-px w-14 bg-gold-soft" />
           <p className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-ink-2">
             Order questions, bulk enquiries for weddings and return gifts, or a custom commission. We reply within
@@ -110,6 +90,23 @@ export default function ContactPage() {
               <MessageCircle size={14} strokeWidth={1.8} />
               Chat on WhatsApp
             </a>
+          </div>
+
+          <div className="card-surface mt-6 p-7">
+            <h2 className="font-display text-2xl font-light">Jewellery in Nayta Mundla, Indore</h2>
+            <p className="mt-3 text-[14px] leading-relaxed text-ink-2">
+              Find us at {addressLine()}. Call or WhatsApp before travelling for help with availability and directions.
+              Browse our necklaces, earrings and bridal jewellery online, with delivery across India.
+            </p>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressLine())}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-block text-sm text-gold-deep underline underline-offset-4"
+            >
+              Find this address on Google Maps
+            </a>
+            <Link href="/shop" className="btn-outline mt-5 w-full">Browse jewellery</Link>
           </div>
 
           <div className="card-surface mt-6 p-7">

@@ -12,6 +12,7 @@ import { getCategories } from '@/lib/queries';
 import { getSession } from '@/lib/auth';
 import { SITE } from '@/lib/site';
 import { JsonLd } from '@/components/json-ld';
+import { AuthSync } from '@/components/auth-sync';
 
 const display = Cormorant_Garamond({
   subsets: ['latin'],
@@ -30,11 +31,11 @@ const sans = Jost({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: `Radhe Krishna Collection | Handcrafted Imitation & Bridal Jewellery India`,
+    default: 'Imitation & Bridal Jewellery | Radhe Krishna Collection',
     template: `%s | Radhe Krishna Collection`,
   },
   description:
-    'Shop premium imitation jewellery online in India: bridal sets, kundan necklaces, polki chokers, temple jewellery, and oxidised silver. Hand-finished in Indore with 6-month warranty & 7-day returns.',
+    'Shop imitation and bridal jewellery from Radhe Krishna Collection, Indore. Explore necklaces, earrings, bangles and kundan styles with delivery across India.',
   keywords: [
     'radhe krishna collection',
     'radhe krishna jewellery',
@@ -54,7 +55,7 @@ export const metadata: Metadata = {
   publisher: SITE.name,
   category: 'Jewelry & Fashion Accessories',
   openGraph: {
-    title: `Radhe Krishna Collection | Handcrafted Imitation & Bridal Jewellery India`,
+    title: 'Imitation & Bridal Jewellery | Radhe Krishna Collection',
     description:
       'Hand-finished kundan, polki, temple, oxidised silver and bridal jewellery sets. Nickel-free, skin-safe, delivered across India.',
     type: 'website',
@@ -79,7 +80,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: '/',
-    languages: { 'en-IN': '/' },
   },
   robots: {
     index: true,
@@ -95,12 +95,23 @@ export const metadata: Metadata = {
   other: {
     'geo.region': 'IN-MP',
     'geo.placename': `${SITE.address.city}, ${SITE.address.state}`,
-    'geo.position': `${SITE.geo.latitude};${SITE.geo.longitude}`,
-    'ICBM': `${SITE.geo.latitude}, ${SITE.geo.longitude}`,
     'format-detection': 'telephone=no',
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon-48x48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/icon-96x96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
 };
 
@@ -139,10 +150,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const localBusinessSchema = {
     '@context': 'https://schema.org',
     '@type': ['JewelryStore', 'Store', 'LocalBusiness', 'Organization'],
+    '@id': `${SITE.url}/#organization`,
     name: SITE.name,
     alternateName: Array.from(SITE.alternateNames),
     url: SITE.url,
-    logo: `${SITE.url}/apple-icon`,
+    logo: `${SITE.url}/apple-touch-icon.png`,
     image: `${SITE.url}/opengraph-image`,
     description: SITE.description,
     telephone: SITE.phone,
@@ -156,15 +168,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     ],
     address: {
       '@type': 'PostalAddress',
+      ...(SITE.address.line1 ? { streetAddress: [SITE.address.line1, SITE.address.line2].filter(Boolean).join(', ') } : {}),
       addressLocality: SITE.address.city,
       addressRegion: SITE.address.state,
       postalCode: SITE.address.pincode,
       addressCountry: SITE.address.countryCode,
-    },
-    geo: {
-      '@type': 'GeoCoordinates',
-      latitude: SITE.geo.latitude,
-      longitude: SITE.geo.longitude,
     },
     openingHoursSpecification: [
       {
@@ -198,6 +206,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </a>
 
         <SiteHeader categories={navCategories} user={session ? { name: session.name } : null} />
+        <AuthSync user={session ? { id: session.id, name: session.name, email: session.email, role: session.role } : null} />
 
         <main id="main" className="min-h-[60vh]">
           {children}

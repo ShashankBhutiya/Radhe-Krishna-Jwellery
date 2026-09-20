@@ -37,5 +37,11 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      { source: '/apple-icon', destination: '/apple-touch-icon.png' },
+      { source: '/icon', destination: '/icon-48x48.png' },
+    ];
+  },
 };
 export default nextConfig;

@@ -82,7 +82,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               url: SITE.url,
               logo: {
                 '@type': 'ImageObject',
-                url: `${SITE.url}/apple-icon`,
+                url: `${SITE.url}/apple-touch-icon.png`,
               },
             },
             mainEntityOfPage: articleUrl,

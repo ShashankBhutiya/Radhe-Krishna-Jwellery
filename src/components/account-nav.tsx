@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Package, MapPin, Heart, User, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useWishlist } from '@/store/wishlist';
+import { useAuth } from '@/store/auth';
 
 const ICONS = { user: User, package: Package, pin: MapPin, heart: Heart };
 
@@ -48,6 +49,7 @@ export function SignOutButton() {
 
   async function signOut() {
     await fetch('/api/auth/logout', { method: 'POST' });
+    useAuth.getState().setUser(null);
     clearWishlist();
     router.push('/');
     router.refresh();

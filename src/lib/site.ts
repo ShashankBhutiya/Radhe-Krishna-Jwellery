@@ -3,8 +3,8 @@
  * Empty strings are unconfirmed details — fill them in and they appear across the site.
  */
 export const SITE = {
-  url: 'https://radhekrishnacollection.com',
-  altUrl: 'https://www.radhekrishnacollection.com',
+  url: 'https://www.radhekrishnacollection.com',
+  altUrl: 'https://radhekrishnacollection.com',
   name: 'Radhe Krishna Jewellery',
   brandName: 'Radhe Krishna Collection',
   shortName: 'Radhe Krishna',
@@ -22,11 +22,11 @@ export const SITE = {
   whatsapp: '919993007021',
   email: 'care@radhekrishnacollection.com',
   address: {
-    line1: '',
-    line2: '',
+    line1: '668 Mount burg',
+    line2: 'Nayta Mundla',
     city: 'Indore',
     state: 'Madhya Pradesh',
-    pincode: '452001',
+    pincode: '452020',
     country: 'India',
     countryCode: 'IN',
   },

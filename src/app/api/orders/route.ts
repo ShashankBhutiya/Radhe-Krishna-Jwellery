@@ -27,6 +27,13 @@ const schema = z.object({
 
 export async function POST(req: Request) {
   const session = await getSession();
+  if (!session) {
+    return NextResponse.json(
+      { error: 'Please sign in or create an account to place an order.' },
+      { status: 401 },
+    );
+  }
+
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
@@ -109,7 +116,7 @@ export async function POST(req: Request) {
     const created = await tx.order.create({
       data: {
         orderNumber: orderNumber(),
-        userId: session?.id ?? null,
+        userId: session.id,
         customerName: d.customerName,
         email: d.email.toLowerCase().trim(),
         phone: d.phone,

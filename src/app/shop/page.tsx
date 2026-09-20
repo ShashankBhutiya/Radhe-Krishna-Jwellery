@@ -1,102 +1,19 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { getProducts } from '@/lib/queries';
-import { ProductGrid } from '@/components/product-card';
-import { FilterPanel, SortBar, ActiveChips, Pagination } from '@/components/shop-filters';
-import { Empty } from '@/components/ui';
+import { ShopResults } from '@/components/shop-results';
 import { GridSkeleton } from '@/components/grid-skeleton';
-import { PRICE_BANDS, SITE, absoluteUrl } from '@/lib/site';
+import { SITE, absoluteUrl } from '@/lib/site';
 import { JsonLd } from '@/components/json-ld';
+import { catalogMetadata } from '@/lib/catalog-seo';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: `Shop All Imitation & Bridal Jewellery Online | ${SITE.brandName}`,
-  description:
-    'Browse hand-finished imitation jewellery: bridal sets, kundan necklaces, polki chokers, temple jewellery, and oxidised silver. Dispatched nationwide with 6-month warranty.',
-  alternates: { canonical: '/shop' },
-  openGraph: {
-    title: `Shop All Imitation & Bridal Jewellery Online | ${SITE.brandName}`,
-    description:
-      'Browse hand-finished imitation jewellery: bridal sets, kundan necklaces, polki chokers, temple jewellery, and oxidised silver.',
-    url: '/shop',
-    type: 'website',
-    images: [
-      {
-        url: '/opengraph-image',
-        width: 1200,
-        height: 630,
-        alt: 'Shop Imitation Jewellery — Radhe Krishna Collection',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: `Shop All Imitation & Bridal Jewellery Online | ${SITE.brandName}`,
-    description:
-      'Browse hand-finished imitation jewellery: bridal sets, kundan necklaces, polki chokers, temple jewellery, and oxidised silver.',
-    images: ['/opengraph-image'],
-  },
-};
+export async function generateMetadata({ searchParams }: { searchParams: Promise<SP> }): Promise<Metadata> {
+  return catalogMetadata('/shop', 'Shop Imitation & Bridal Jewellery',
+    'Browse necklaces, earrings, bangles and bridal jewellery. Explore kundan, polki and oxidised styles with delivery across India.', await searchParams);
+}
 
 type SP = Record<string, string | string[] | undefined>;
-
-const asArray = (v: string | string[] | undefined) => (Array.isArray(v) ? v : v ? [v] : []);
-
-/** Shared by /shop and /category/[slug]. */
-export async function ShopResults({
-  searchParams,
-  categorySlug,
-}: {
-  searchParams: SP;
-  categorySlug?: string;
-}) {
-  const bandLabel = typeof searchParams.band === 'string' ? searchParams.band : undefined;
-  const band = PRICE_BANDS.find((b) => b.label === bandLabel);
-
-  const { items, total, page, pages } = await getProducts({
-    category: categorySlug,
-    q: typeof searchParams.q === 'string' ? searchParams.q : undefined,
-    materials: asArray(searchParams.material),
-    occasions: asArray(searchParams.occasion),
-    colors: asArray(searchParams.colour),
-    min: band?.min,
-    max: band?.max,
-    sort: typeof searchParams.sort === 'string' ? searchParams.sort : 'featured',
-    page: Number(searchParams.page) || 1,
-    perPage: 12,
-    inStockOnly: searchParams.stock === 'in',
-  });
-
-  return (
-    <div className="grid gap-10 lg:grid-cols-[248px_1fr] lg:gap-14">
-      <aside className="hidden lg:block">
-        <div className="sticky top-32">
-          <FilterPanel />
-        </div>
-      </aside>
-
-      <div>
-        <SortBar total={total} showing={items.length} />
-        <ActiveChips />
-
-        <div className="mt-10">
-          {items.length === 0 ? (
-            <Empty
-              title="Nothing matches those filters"
-              copy="Try widening the price band or clearing a material — the collection changes weekly."
-              action={{ href: '/shop', label: 'View all pieces' }}
-            />
-          ) : (
-            <ProductGrid products={items} cols={3} />
-          )}
-        </div>
-
-        <Pagination page={page} pages={pages} />
-      </div>
-    </div>
-  );
-}
 
 export default async function ShopPage({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
@@ -133,7 +50,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
       <header className="border-b border-line bg-canvas-2">
         <div className="container-lux py-14 text-center lg:py-20">
           <span className="label">{q ? 'Search results' : 'The full collection'}</span>
-          <h1 className="display-lg mt-4">{q ? `“${q}”` : 'Every piece we make'}</h1>
+          <h1 className="display-lg mt-4">{q ? `Search results for “${q}”` : 'Shop imitation jewellery online'}</h1>
           <span className="mx-auto mt-5 block h-px w-14 bg-gold-soft" />
           <p className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-ink-2">
             {q
