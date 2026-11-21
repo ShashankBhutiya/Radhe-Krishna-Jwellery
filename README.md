@@ -115,3 +115,5 @@ src/
   middleware.ts      Route guards for /admin and /account
   store/             Zustand stores (cart, wishlist, UI, recently viewed)
 ```
+
+OFF CAMPUS CODE: J8PVWR
